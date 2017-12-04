@@ -12,7 +12,7 @@ set(CCOS_BUILD_ARCH Unknown)
 ################################################################################
 if(NOT CCOS_LINK_TYPE)
   set(CCOS_LINK_TYPE SHARED)
-elseif(${CCOS_LINK_TYPE} STREQUAL "STATIC")
+elseif("${CCOS_LINK_TYPE}" STREQUAL "STATIC")
   add_definitions(-DCC_STATIC)
 endif()
 
@@ -42,6 +42,7 @@ set ( CompilerFlags
         CMAKE_C_FLAGS_RELWITHDEBINFO
         CMAKE_C_FLAGS_MINSIZEREL
     )
+
 # Enable Warning Level 4
 foreach(CompilerFlag ${CompilerFlags})
   if(${CompilerFlag} MATCHES "/W[0-4]")
@@ -52,10 +53,22 @@ foreach(CompilerFlag ${CompilerFlags})
   else()
     set(${CompilerFlag} "${${CompilerFlag}} /W4")
   endif()
-  if(${CCOS_LINK_TYPE_RUNTIME} STREQUAL "STATIC")
+  if("${CCOS_LINK_TYPE_RUNTIME}" STREQUAL "STATIC")
     string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
   endif()
 endforeach()
+
+# Enable Warning As Error if requested
+if(CC_WARNING_AS_ERROR)
+  # Enable Warning As error for each known build type
+  foreach(CompilerFlag ${CompilerFlags})
+    if(${CompilerFlag} MATCHES "/WX")
+      # do not set /WX twice
+    else()
+      set(${CompilerFlag} "${${CompilerFlag}} /WX")
+    endif()
+  endforeach()
+endif(CC_WARNING_AS_ERROR)
 
 ################################################################################
 # Set common linker flags: 

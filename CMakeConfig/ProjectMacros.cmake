@@ -1,4 +1,4 @@
-SET(CCTFTPSERVER_EXPORT_CMAKECONFIG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMakeConfig)
+SET(CCTFTPSERVER_CMAKECONFIG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMakeConfig)
 
 ################################################################################
 # Setup default installation targets for a project
@@ -15,9 +15,9 @@ MACRO (CcTftpServerSetInstall ProjectName )
            ARCHIVE DESTINATION lib/static
            PUBLIC_HEADER DESTINATION include/${ProjectName}
          )
-  
+     
   # If we are building just CcOS Framework we have to package all headers and configs
-  if(${CMAKE_PROJECT_NAME} STREQUAL "CcOS")
+  if("${CMAKE_PROJECT_NAME}" STREQUAL "CcOS")
     set_property( TARGET ${ProjectName} APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR};${CMAKE_CURRENT_BINARY_DIR}>
                 )
@@ -45,8 +45,8 @@ ENDMACRO()
 MACRO (CcSetOSVersion ProjectName )
   SET_TARGET_PROPERTIES(  ${ProjectName}
                           PROPERTIES
-                          VERSION ${CCTFTPSERVER_EXPORT_VERSION_CMAKE}
-                          SOVERSION ${CCTFTPSERVER_EXPORT_VERSION_CMAKE})
+                          VERSION ${CCTFTPSERVER_VERSION_CMAKE}
+                          SOVERSION ${CCTFTPSERVER_VERSION_CMAKE})
 ENDMACRO()
 
 ################################################################################
@@ -67,7 +67,8 @@ ENDMACRO()
 ################################################################################
 MACRO( CcTftpServerGenerateRcFileToCurrentDir ProjectName )
   SET(PROJECT_NAME "${ProjectName}")
-  configure_file( ${CCTFTPSERVER_EXPORT_CMAKECONFIG_DIR}/InputFiles/CcTftpServerVersion.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/CcTftpServerVersion.rc @ONLY)
+  configure_file( ${CCTFTPSERVER_CMAKECONFIG_DIR}/InputFiles/ProjectVersion.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/CcTftpServerVersion.rc.tmp @ONLY)
+  CcCopyFile(${CMAKE_CURRENT_SOURCE_DIR}/CcTftpServerVersion.rc.tmp ${CMAKE_CURRENT_SOURCE_DIR}/CcTftpServerVersion.rc)
 ENDMACRO()
 
 ################################################################################
